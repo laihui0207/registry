@@ -50,7 +50,7 @@ management:
 security:
     user:
         name: admin
-        password: admin
+        password: cetc16
         role: USER,ADMIN
 
 # ===================================================================
@@ -96,3 +96,13 @@ jhipster:
         title: JHipster Registry API
         description: JHipster Registry API documentation
         version: ${info.project.version}
+    security:
+        authentication:
+            jwt:
+                secret: 021d6ab4da330a3f554db8acf2a3a32c4e0c6dcc
+# Property used on app startup to check the config server status
+configserver:
+    name: JHipster Registry config server
+    status: Connected to the JHipster Registry config server!
+
+

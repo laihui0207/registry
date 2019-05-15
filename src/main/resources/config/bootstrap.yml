@@ -12,7 +12,9 @@ spring:
         config:
             server:
                 git:
-                    uri: https://github.com/jhipster/jhipster-registry-sample-config
+                    uri: https://gitee.com/happy0207/market-config
+                    username: happy0207
+                    password: Happy1980
                 native:
                     search-locations: file:./central-config
                 prefix: /config

@@ -13,21 +13,71 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
+eureka:
+    instance:
+        prefer-ip-address: true
+    client:
+        service-url:
+            defaultZone: http://admin:${jhipster.registry.password}@localhost:8761/eureka/
+
 spring:
     devtools:
         restart:
             enabled: false
         livereload:
             enabled: false
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:mysql://localhost:3306/market?useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: root
+        password: root
+        hikari:
+            data-source-properties:
+                cachePrepStmts: true
+                prepStmtCacheSize: 250
+                prepStmtCacheSqlLimit: 2048
+                useServerPrepStmts: true
+            minimum-idle: 20
+            maximum-pool-size: 120
+            max-lifetime: 14400000
+            connection-timeout: 30000
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        database: MYSQL
+        show-sql: false
+        properties:
+            hibernate.id.new_generator_mappings: true
+            hibernate.cache.use_second_level_cache: true
+            hibernate.cache.use_query_cache: true
+            hibernate.generate_statistics: false
+            hibernate.cache.region.factory_class: com.hazelcast.hibernate.HazelcastCacheRegionFactory
+            hibernate.cache.hazelcast.instance_name: market
+            hibernate.cache.use_minimal_puts: true
+            hibernate.cache.hazelcast.use_lite_member: true
+    data:
+        elasticsearch:
+            cluster-name:
+            cluster-nodes: localhost:9300
     mail:
         host: localhost
         port: 25
         username:
         password:
+    thymeleaf:
+        cache: true
+    zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
+        base-url: http://localhost:9411
+        enabled: false
+        locator:
+            discovery:
+                enabled: true
+
+liquibase:
+    contexts: prod
 
 # ===================================================================
 # To enable SSL, generate a certificate using:
-# keytool -genkey -alias JHipsterRegistry -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
+# keytool -genkey -alias market -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
 #
 # You can also use Let's Encrypt:
 # https://maximilian-boehm.com/hp2121/Create-a-Java-Keystore-JKS-from-Let-s-Encrypt-Certificates.htm
@@ -40,20 +90,15 @@ spring:
 #        key-store: keystore.p12
 #        key-store-password: <your-password>
 #        keyStoreType: PKCS12
-#        keyAlias: JHipsterRegistry
+#        keyAlias: market
 # ===================================================================
 server:
-    port: 8761
+    port: 8080
     compression:
         enabled: true
         mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
         min-response-size: 1024
 
-security:
-    user:
-        name: admin
-        password: cetc16
-        role: USER,ADMIN
 # ===================================================================
 # JHipster specific properties
 #
@@ -65,14 +110,26 @@ jhipster:
         version: V_1_1 # To use HTTP/2 you will need SSL support (see above the "server.ssl" configuration)
         cache: # Used by the CachingHttpHeadersFilter
             timeToLiveInDays: 1461
+    cache: # Cache configuration
+        hazelcast: # Hazelcast distributed cache
+            time-to-live-seconds: 36000
+            backup-count: 1
+            # management-center:
+            #     enabled: true # Hazelcast management center is disabled by default
+            #     update-interval: 3 # Updates are sent to the Hazelcast management center every 3 seconds by default
+            # Default URL for Hazelcast management center when using JHipster's Docker Compose configuration
+            # See src/main/docker/hazelcast-management-center.yml
+            # Warning, the default port is 8180 as port 8080 is already used by JHipster
+            #     url: http://localhost:8180/mancenter
     security:
         authentication:
             jwt:
+                secret: 021d6ab4da330a3f554db8acf2a3a32c4e0c6dcc
                 # Token is valid 24 hours
                 token-validity-in-seconds: 86400
                 token-validity-in-seconds-for-remember-me: 2592000
     mail: # specific JHipster mail property, for standard properties see MailProperties
-        from: JHipsterRegistry@localhost
+        from: market@localhost
         base-url: http://my-server-url-to-change # Modify according to your server's URL
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
@@ -80,7 +137,7 @@ jhipster:
             enabled: false
             host: localhost
             port: 2003
-            prefix: JHipsterRegistry
+            prefix: market
         prometheus:
             enabled: false
             endpoint: /prometheusMetrics
@@ -93,9 +150,7 @@ jhipster:
             host: localhost
             port: 5000
             queue-size: 512
-        spectator-metrics: # Reports Spectator Circuit Breaker metrics in the logs
-            enabled: false
-            # edit spring.metrics.export.delay-millis to set report frequency
+
 
 # ===================================================================
 # Application specific properties
@@ -107,3 +162,10 @@ jhipster:
 # ===================================================================
 
 application:
+imageResource:
+    path: e:/market/marketstatic/content
+FileResource:
+    path: e:/market/marketstatic/upload
+    backUp: false
+    delete: true
+DNS: http://hfly.cetccmc.com:9527
